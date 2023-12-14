@@ -4,6 +4,8 @@
  */
 package pa.cifpaviles.dam.main;
 
+import pa.cifpaviles.dam.main.PersistenciaDatos.*;
+
 /**
  *
  * @author hulke
@@ -29,6 +31,11 @@ public class JFramePD extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         bVolver = new javax.swing.JButton();
+        bVuelosCompania = new javax.swing.JButton();
+        bLlegadas = new javax.swing.JButton();
+        bSalidas = new javax.swing.JButton();
+        bVuelosPrevistos = new javax.swing.JButton();
+        bRecaudaciones = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -41,19 +48,64 @@ public class JFramePD extends javax.swing.JFrame {
             }
         });
 
+        bVuelosCompania.setText("Vuelos por compañia");
+
+        bLlegadas.setText("Llegadas");
+        bLlegadas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bLlegadasActionPerformed(evt);
+            }
+        });
+
+        bSalidas.setText("Salidas");
+        bSalidas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bSalidasActionPerformed(evt);
+            }
+        });
+
+        bVuelosPrevistos.setText("<html><center>Lista de Vuelos<br>Previstos</center></html>");
+
+        bRecaudaciones.setText("Recaudaciones");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(641, Short.MAX_VALUE)
-                .addComponent(bVolver)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(bVolver))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(43, 43, 43)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(bRecaudaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(50, 50, 50)
+                                .addComponent(bVuelosPrevistos, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(bSalidas, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(50, 50, 50)
+                                .addComponent(bLlegadas, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(66, 66, 66)
+                        .addComponent(bVuelosCompania, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 90, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(423, Short.MAX_VALUE)
+                .addGap(132, 132, 132)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bSalidas, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(bLlegadas, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(bVuelosCompania, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(63, 63, 63)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bRecaudaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(bVuelosPrevistos, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
                 .addComponent(bVolver)
                 .addContainerGap())
         );
@@ -81,6 +133,16 @@ public class JFramePD extends javax.swing.JFrame {
         ventanaMenu.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_bVolverActionPerformed
+
+    private void bLlegadasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bLlegadasActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_bLlegadasActionPerformed
+
+    private void bSalidasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSalidasActionPerformed
+        JFramePDSalidas ventanaSalidas = new JFramePDSalidas();
+        ventanaSalidas.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_bSalidasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -120,7 +182,12 @@ public class JFramePD extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bLlegadas;
+    private javax.swing.JButton bRecaudaciones;
+    private javax.swing.JButton bSalidas;
     private javax.swing.JButton bVolver;
+    private javax.swing.JButton bVuelosCompania;
+    private javax.swing.JButton bVuelosPrevistos;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }

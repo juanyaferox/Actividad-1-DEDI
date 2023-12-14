@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ public class Gestion {
     //métodos agregar-a-archivo.csv
     public void agregarCompania(CompaniaAerea compania) {
         this.listCA.add(compania);
-        
+
         if (prefijoExiste(compania.getPrefijo())) {
             JOptionPane.showMessageDialog(null, "El prefijo ya existe en el archivo", "Error", 0);
             return;
@@ -55,7 +57,7 @@ public class Gestion {
             e.getMessage();
         }
     }
-    
+
     private boolean prefijoExiste(int prefijo) {
         try (BufferedReader reader = new BufferedReader(new FileReader("csv/companias_aereas.csv"))) {
             String linea;
@@ -72,13 +74,13 @@ public class Gestion {
     }
 
     public void agregarVuelo(Vuelos vuelo) {
-        
-        if (codigoExiste(vuelo.getCodigo())){
+
+        if (codigoExiste(vuelo.getCodigo())) {
             JOptionPane.showMessageDialog(null, "Ya existe un vuelo con ese mismo código", "ERROR", 0);
             return;
         }
         this.listV.add(vuelo);
-        
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("csv/vuelos.csv", true))) {
             writer.write(vuelo.getCodigo() + ";" + vuelo.getIATAOrigen() + ";" + vuelo.getIATADestino()
                     + ";" + vuelo.getNumeroPlazas() + ";" + vuelo.getHoraSalidaOficial() + ";" + vuelo.getHoraSalidaOficial()
@@ -87,9 +89,9 @@ public class Gestion {
         } catch (IOException e) {
             e.getMessage();
         }
-        
+
     }
-    
+
     private boolean codigoExiste(String codigo) {
         try (BufferedReader reader = new BufferedReader(new FileReader("csv/vuelos.csv"))) {
             String linea;
@@ -104,7 +106,6 @@ public class Gestion {
         }
         return false; // El código no existe
     }
-    
 
     public void agregarVueloDiario(VuelosDiarios vueloD) {
         this.listVD.add(vueloD);
@@ -179,8 +180,7 @@ public class Gestion {
         String rutaArchivo = "csv/companias_aereas.csv";
         String rutaArchivoTemporal = "csv/temp.csv";
 
-        try (BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo));
-             BufferedWriter escritor = new BufferedWriter(new FileWriter(rutaArchivoTemporal))) {
+        try (BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo)); BufferedWriter escritor = new BufferedWriter(new FileWriter(rutaArchivoTemporal))) {
 
             String linea;
             while ((linea = lector.readLine()) != null) {
@@ -238,8 +238,8 @@ public class Gestion {
             while ((linea = lector.readLine()) != null) {
                 String[] campos = linea.split(";");
                 if (campos.length > 0 && campos[0].equals(id)) {
-                     String mensaje = String.format("Código: %s\nNombre: %s\nDirección: %s\nMunicipio: %s\nTeléfono Pasajero: %s\nTeléfono Aeropuerto: %s",
-                        campos[1], campos[2], campos[3], campos[4], campos[5], campos[6]);
+                    String mensaje = String.format("Código: %s\nNombre: %s\nDirección: %s\nMunicipio: %s\nTeléfono Pasajero: %s\nTeléfono Aeropuerto: %s",
+                            campos[1], campos[2], campos[3], campos[4], campos[5], campos[6]);
                     JOptionPane.showMessageDialog(null, mensaje, "Consulta de la compañía id " + id, 1);
                     return; // Termina la búsqueda después de encontrar la primera coincidencia
                 } else {
@@ -250,13 +250,14 @@ public class Gestion {
             e.printStackTrace();
         }
     }
+
     //métodos para gestion de vuelos
-     public void altaV(String codigo, String iataOr, String iataDest, int numplazas, LocalTime horaSO, LocalTime horaLO, String diasOperativos) {
+    public void altaV(String codigo, String iataOr, String iataDest, int numplazas, LocalTime horaSO, LocalTime horaLO, String diasOperativos) {
         Vuelos V = new Vuelos(codigo, iataOr, iataDest, numplazas, horaSO, horaLO, diasOperativos);
         agregarVuelo(V);
     }
-     
-     public static void bajaV(String idABorrar) {
+
+    public static void bajaV(String idABorrar) {
         String rutaArchivo = "csv/vuelos.csv";
 
         try (BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo)); BufferedWriter escritor = new BufferedWriter(new FileWriter("csv/temp.csv"))) {
@@ -285,56 +286,55 @@ public class Gestion {
         // Reemplaza el archivo original con el nuevo archivo modificado
         reemplazarArchivo("csv/temp.csv", rutaArchivo);
     }
-     
-     public static void modificarV(String idAModificar, String nuevoIATADest, String nuevoIATAOr,
+
+    public static void modificarV(String idAModificar, String nuevoIATADest, String nuevoIATAOr,
             String nuevoNumPlazas, String nuevoHoraSO, String nuevoHoraLO,
             String nuevoDiasSOp) {
         String rutaArchivo = "csv/vuelos.csv";
         String rutaArchivoTemporal = "csv/temp.csv";
         String rutaArchivoDiarios = "csv/vuelos_diarios.csv";
-        
+
         boolean idExiste = false;
-        
+
         try (BufferedReader lectorDiarios = new BufferedReader(new FileReader(rutaArchivoDiarios))) {
-        String lineaDiarios;
-        while ((lineaDiarios = lectorDiarios.readLine()) != null) {
-            String[] camposDiarios = lineaDiarios.split(";");
-            if (camposDiarios[0].equals(idAModificar)) {
-                idExiste = true;
-                break;  // No es necesario seguir leyendo el archivo
-            }
-        }
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-        if (!idExiste) {
-        try (BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo));
-             BufferedWriter escritor = new BufferedWriter(new FileWriter(rutaArchivoTemporal))) {
-
-            String linea;
-            while ((linea = lector.readLine()) != null) {
-                String[] campos = linea.split(";");
-                if (campos[0].equals(idAModificar)) {
-                    // Llama al método para realizar modificaciones en la línea actual
-                    String lineaModificada = modificarCamposVuelo(campos, nuevoIATADest, nuevoIATAOr,
-                            nuevoNumPlazas, nuevoHoraSO, nuevoHoraLO, nuevoDiasSOp);
-                    escritor.write(lineaModificada);
-                } else {
-                    escritor.write(linea);
+            String lineaDiarios;
+            while ((lineaDiarios = lectorDiarios.readLine()) != null) {
+                String[] camposDiarios = lineaDiarios.split(";");
+                if (camposDiarios[0].equals(idAModificar)) {
+                    idExiste = true;
+                    break;  // No es necesario seguir leyendo el archivo
                 }
-                escritor.newLine();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-        reemplazarArchivo(rutaArchivoTemporal, rutaArchivo);
+        if (!idExiste) {
+            try (BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo)); BufferedWriter escritor = new BufferedWriter(new FileWriter(rutaArchivoTemporal))) {
+
+                String linea;
+                while ((linea = lector.readLine()) != null) {
+                    String[] campos = linea.split(";");
+                    if (campos[0].equals(idAModificar)) {
+                        // Llama al método para realizar modificaciones en la línea actual
+                        String lineaModificada = modificarCamposVuelo(campos, nuevoIATADest, nuevoIATAOr,
+                                nuevoNumPlazas, nuevoHoraSO, nuevoHoraLO, nuevoDiasSOp);
+                        escritor.write(lineaModificada);
+                    } else {
+                        escritor.write(linea);
+                    }
+                    escritor.newLine();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            reemplazarArchivo(rutaArchivoTemporal, rutaArchivo);
         } else {
             JOptionPane.showMessageDialog(null, "El código ya se encuentra en vuelos diarios, porfavor intento con otro", "ERROR", 0);
         }
     }
-     
-     private static String modificarCamposVuelo(String[] campos, String nuevoIATADest, String nuevoIATAOr,
+
+    private static String modificarCamposVuelo(String[] campos, String nuevoIATADest, String nuevoIATAOr,
             String nuevoNumPlazas, String nuevoHoraSO, String nuevoHoraLO,
             String nuevoDiasSOp) {
         // Modifica los campos solo si los nuevos valores no son nulos
@@ -360,17 +360,17 @@ public class Gestion {
         // Une los campos modificados para formar la línea actualizada
         return String.join(";", campos);
     }
-     
-      public static void consultarV(String id) {
+
+    public static void consultarV(String id) {
         String rutaArchivo = "csv/vuelos.csv";
         try (BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo));) {
             String linea;
             while ((linea = lector.readLine()) != null) {
                 String[] campos = linea.split(";");
                 if (campos.length > 0 && campos[0].equals(id)) {
-                     String mensaje = String.format(
-                             "IATA Aeropuerto Origen: %s\nIATA Aeropuerto Destino: %s\nNúmero de plazas: %s\nHora de salida oficial: %s\nHora de llegada oficial: %s\nDias operativos: %s",
-                        campos[1], campos[2], campos[3], campos[4], campos[5], campos[6]);
+                    String mensaje = String.format(
+                            "IATA Aeropuerto Origen: %s\nIATA Aeropuerto Destino: %s\nNúmero de plazas: %s\nHora de salida oficial: %s\nHora de llegada oficial: %s\nDias operativos: %s",
+                            campos[1], campos[2], campos[3], campos[4], campos[5], campos[6]);
                     JOptionPane.showMessageDialog(null, mensaje, "Consulta del vuelo de codigo " + id, 1);
                     return; // Termina la búsqueda después de encontrar la primera coincidencia
                 } else {
@@ -381,5 +381,111 @@ public class Gestion {
             e.printStackTrace();
         }
     }
-     
+    //Persistencia Datos Métodos/Lógica
+    //
+    //Panel de Salida
+    private static ArrayList<String> valoresEncontrados = new ArrayList<>();
+
+    public static ArrayList<String> getValoresEncontrados() {
+        return valoresEncontrados;
+    }
+
+    public static void panelSalidas() {
+        panelSalidas(LocalDate.now());
+    }
+
+    public static void panelSalidas(LocalDate dia) {
+        if (dia == null) {
+            dia = LocalDate.now();
+        }
+
+        String codigoVueloOperativo = verificarOperatividad(dia);
+        if (obtenerValorSegundaColumna(codigoVueloOperativo).equals("OVD")) {
+
+            try (BufferedReader lector = new BufferedReader(new FileReader("csv/vuelos.csv"))) {
+                String linea;
+                while ((linea = lector.readLine()) != null) {
+                    String[] campos = linea.split(";");
+                    if (campos.length > 1 && campos[0].equals(codigoVueloOperativo)) {
+                        valoresEncontrados.add(campos[0]);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static String obtenerLetrasDia(LocalDate dia) {
+        switch (dia.getDayOfWeek()) {
+            case MONDAY:
+                return "L";
+            case TUESDAY:
+                return "M";
+            case WEDNESDAY:
+                return "X";
+            case THURSDAY:
+                return "J";
+            case FRIDAY:
+                return "V";
+            case SATURDAY:
+                return "S";
+            case SUNDAY:
+                return "D";
+            default:
+                return " ";
+        }
+    }
+
+    public static String verificarOperatividad(LocalDate dia) {
+
+        try (BufferedReader lector = new BufferedReader(new FileReader("csv/vuelos_diarios.csv"))) {
+            String linea;
+            while ((linea = lector.readLine()) != null) {
+                String[] campos = linea.split(";");
+                if (operaEnEsteDia(campos, dia)) {
+                    return campos[0]; //Devuelve el código del vuelo
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null; // No se encontró un vuelo en ese dia
+    }
+
+    public static boolean operaEnEsteDia(String[] campos, LocalDate dia) {
+        if (campos.length >= 6 && contieneAlMenosUnDia(campos[5], obtenerLetrasDia(dia))) {
+            return true; // El vuelo opera en este día
+        }
+        return false;
+    }
+
+    private static boolean contieneAlMenosUnDia(String cadena, String dias) {
+        for (char dia : dias.toCharArray()) {
+            if (cadena.indexOf(dia) != -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String obtenerValorSegundaColumna(String valorPrimeraColumna) {
+        String rutaArchivo = "csv/vuelos.csv";
+
+        try (BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo))) {
+            String linea;
+            while ((linea = lector.readLine()) != null) {
+                String[] campos = linea.split(";");
+                if (campos.length > 1 && campos[0].equals(valorPrimeraColumna)) {
+                    return campos[1]; // Devuelve el valor de la segunda columna
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null; // No se encontró una coincidencia en la primera columna
+    }
+
 }
