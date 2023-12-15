@@ -4,6 +4,8 @@
  */
 package pa.cifpaviles.dam.main;
 
+import Temperaturas.AemetTemperatureComponent;
+import Temperaturas.ResultadoTemperaturas;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -375,29 +377,35 @@ public class Gestion {
                     String iataDestino = camposVuelos[2];
                     String infoAeropuertoOrigen = "";
                     String infoAeropuertoDestino = "";
-                    
+
                     // Buscar información en el archivo aeropuertos.csv
                     String lineaAeropuertos;
                     while ((lineaAeropuertos = lectorAeropuertos.readLine()) != null) {
                         String[] camposAeropuertos = lineaAeropuertos.split(";");
-                        if (camposAeropuertos.length >= 3) {
-                            if (camposAeropuertos[0].equals(iataOrigen)) {
-                                infoAeropuertoOrigen = camposAeropuertos[2];
-                            }
-                            if (camposAeropuertos[0].equals(iataDestino)) {
-                                infoAeropuertoDestino = camposAeropuertos[3];
-                            }
-                            if (!infoAeropuertoOrigen.isEmpty() && !infoAeropuertoDestino.isEmpty()) {
-                                break;
-                            }
-                        }
-                    }
-                    String mensaje = String.format(
-                            "IATA Aeropuerto Origen: %s\nCodigo Municipio Aeropuerto Origen: %s\n IATA Aeropuerto Destino: %s\nCodigo Municipio Aeropuerto Destino: %s\nNúmero de plazas: %s\nHora de salida oficial: %s\nHora de llegada oficial: %s\nDias operativos: %s",
-                            iataOrigen,infoAeropuertoOrigen, iataDestino,infoAeropuertoDestino, camposVuelos[3], camposVuelos[4], camposVuelos[5], camposVuelos[6]);
-                    JOptionPane.showMessageDialog(null, mensaje, "Consulta del vuelo de codigo " + id, 1);
-                    //implementar aqui API para las temperaturas usando infoAeropuertoOrigen y infoAeropuertoDestino
 
+                        if (camposAeropuertos[0].equals(iataOrigen)) {
+                            infoAeropuertoOrigen = camposAeropuertos[2];
+                        }
+                        if (camposAeropuertos[0].equals(iataDestino)) {
+                            infoAeropuertoDestino = camposAeropuertos[2];
+                        }
+                        if (!infoAeropuertoOrigen.isEmpty() && !infoAeropuertoDestino.isEmpty()) {
+                            break;
+                        }
+                    }//JA8475
+                    ResultadoTemperaturas temperaturaOrigen = AemetTemperature(infoAeropuertoOrigen);
+                    String tempMaxOrigen = temperaturaOrigen.getTemperaturaMaxima();
+                    String tempMinOrigen = temperaturaOrigen.getTemperaturaMinima();
+                    ResultadoTemperaturas temperaturasDestino = AemetTemperature(infoAeropuertoDestino);
+                    String tempMaxDest = temperaturasDestino.getTemperaturaMaxima();
+                    String tempMinDest = temperaturasDestino.getTemperaturaMinima();
+                    String mensaje = String.format(
+                            "IATA Aeropuerto Origen: %s\nTemperatura Máxima Origen: %s\nTemperatura Mínima Origen: %s\nIATA Aeropuerto Destino: %s\nTemperatura Máxima Destino: %s\nTemperatura Mínima Destino: %s\nNúmero de plazas: %s\nHora de salida oficial: %s\nHora de llegada oficial: %s\nDías operativos: %s",
+                            iataOrigen, tempMaxOrigen, tempMinOrigen, iataDestino, tempMaxDest, tempMinDest, camposVuelos[3], camposVuelos[4], camposVuelos[5], camposVuelos[6]);
+
+                    JOptionPane.showMessageDialog(null, mensaje, "Consulta del vuelo de codigo " + id, 1);
+
+                    //implementar aqui API para las temperaturas usando infoAeropuertoOrigen y infoAeropuertoDestino
                 } else {
                     JOptionPane.showMessageDialog(null, "No se obtuvo ningún resultado", "Consulta del vuelo de codigo " + id, 0);
                 }
@@ -643,5 +651,12 @@ public class Gestion {
         }
 
         return null; // No se encontró una coincidencia en la primera columna
+    }
+
+    //API 
+    public static ResultadoTemperaturas AemetTemperature(String codMunicipio) {
+        String apiKey = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuaWFnbzIwMDFAZ21haWwuY29tIiwianRpIjoiNmM1NDRlNmUtMjhiYS00NWQ0LTgyZWYtZmE0N2ZmYWViYWJlIiwiaXNzIjoiQUVNRVQiLCJpYXQiOjE3MDI0MTgzNjQsInVzZXJJZCI6IjZjNTQ0ZTZlLTI4YmEtNDVkNC04MmVmLWZhNDdmZmFlYmFiZSIsInJvbGUiOiIifQ.1nQue_YdNEHLDDNrVGUMZjy2hmCELb7FZ5WaAacCF4s";
+        AemetTemperatureComponent APITemperatura = new AemetTemperatureComponent(apiKey, codMunicipio);
+        return APITemperatura.obtenerTemperaturas();
     }
 }

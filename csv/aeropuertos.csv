@@ -1,6 +1,7 @@
-ABC;Aeropuerto de Albacete;1027
-EDI;Aeropuerto de Edimburgo;0
-PNA;Aeropuerto de Pamplona;31201
-SBZ;Aeropuerto Internacional de Sibiu;0
-YOW;Aeropuerto Internacional de Ottawa;0
-OVD;Aeropuerto de Oviedo;33044
+ABC;Aeropuerto de Albacete;1027;;;
+EDI;Aeropuerto de Edimburgo;0;;;
+PNA;Aeropuerto de Pamplona;31201;;;
+SBZ;Aeropuerto Internacional de Sibiu;0;;;
+YOW;Aeropuerto Internacional de Ottawa;0;;;
+OVD;Aeropuerto de Oviedo;33044;;;
+GJN;Aeropuerto de Gijon (ejemplo);33024;;;
