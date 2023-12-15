@@ -16,6 +16,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -362,17 +364,40 @@ public class Gestion {
     }
 
     public static void consultarV(String id) {
-        String rutaArchivo = "csv/vuelos.csv";
-        try (BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo));) {
-            String linea;
-            while ((linea = lector.readLine()) != null) {
-                String[] campos = linea.split(";");
-                if (campos.length > 0 && campos[0].equals(id)) {
+        String rutaArchivoVuelos = "csv/vuelos.csv";
+        String rutaArchivoAeropuertos = "csv/aeropuertos.csv";
+        try (BufferedReader lectorVuelos = new BufferedReader(new FileReader(rutaArchivoVuelos)); BufferedReader lectorAeropuertos = new BufferedReader(new FileReader(rutaArchivoAeropuertos))) {
+            String lineaVuelos;
+            while ((lineaVuelos = lectorVuelos.readLine()) != null) {
+                String[] camposVuelos = lineaVuelos.split(";");
+                if (camposVuelos.length > 0 && camposVuelos[0].equals(id)) {
+                    String iataOrigen = camposVuelos[1];
+                    String iataDestino = camposVuelos[2];
+                    String infoAeropuertoOrigen = "";
+                    String infoAeropuertoDestino = "";
+                    
+                    // Buscar información en el archivo aeropuertos.csv
+                    String lineaAeropuertos;
+                    while ((lineaAeropuertos = lectorAeropuertos.readLine()) != null) {
+                        String[] camposAeropuertos = lineaAeropuertos.split(";");
+                        if (camposAeropuertos.length >= 3) {
+                            if (camposAeropuertos[0].equals(iataOrigen)) {
+                                infoAeropuertoOrigen = camposAeropuertos[2];
+                            }
+                            if (camposAeropuertos[0].equals(iataDestino)) {
+                                infoAeropuertoDestino = camposAeropuertos[3];
+                            }
+                            if (!infoAeropuertoOrigen.isEmpty() && !infoAeropuertoDestino.isEmpty()) {
+                                break;
+                            }
+                        }
+                    }
                     String mensaje = String.format(
-                            "IATA Aeropuerto Origen: %s\nIATA Aeropuerto Destino: %s\nNúmero de plazas: %s\nHora de salida oficial: %s\nHora de llegada oficial: %s\nDias operativos: %s",
-                            campos[1], campos[2], campos[3], campos[4], campos[5], campos[6]);
+                            "IATA Aeropuerto Origen: %s\nCodigo Municipio Aeropuerto Origen: %s\n IATA Aeropuerto Destino: %s\nCodigo Municipio Aeropuerto Destino: %s\nNúmero de plazas: %s\nHora de salida oficial: %s\nHora de llegada oficial: %s\nDias operativos: %s",
+                            iataOrigen,infoAeropuertoOrigen, iataDestino,infoAeropuertoDestino, camposVuelos[3], camposVuelos[4], camposVuelos[5], camposVuelos[6]);
                     JOptionPane.showMessageDialog(null, mensaje, "Consulta del vuelo de codigo " + id, 1);
-                    return; // Termina la búsqueda después de encontrar la primera coincidencia
+                    //implementar aqui API para las temperaturas usando infoAeropuertoOrigen y infoAeropuertoDestino
+
                 } else {
                     JOptionPane.showMessageDialog(null, "No se obtuvo ningún resultado", "Consulta del vuelo de codigo " + id, 0);
                 }
@@ -400,6 +425,10 @@ public class Gestion {
         }
 
         String codigoVueloOperativo = verificarOperatividad(dia);
+        if (codigoVueloOperativo == null) {
+            return; // Terminar método
+        }
+        valoresEncontrados.clear();
         if (obtenerValorSegundaColumna(codigoVueloOperativo).equals("OVD")) {
 
             try (BufferedReader lector = new BufferedReader(new FileReader("csv/vuelos.csv"))) {
@@ -488,4 +517,131 @@ public class Gestion {
         return null; // No se encontró una coincidencia en la primera columna
     }
 
+    //Panel de Llegadas
+    public static String obtenerValorTerceraColumna(String valorPrimeraColumna) {
+        String rutaArchivo = "csv/vuelos.csv";
+
+        try (BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo))) {
+            String linea;
+            while ((linea = lector.readLine()) != null) {
+                String[] campos = linea.split(";");
+                if (campos.length > 1 && campos[0].equals(valorPrimeraColumna)) {
+                    return campos[2]; // Devuelve el valor de la segunda columna
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null; // No se encontró una coincidencia en la primera columna
+    }
+
+    public static void panelEntradas(LocalDate dia) {
+        if (dia == null) {
+            dia = LocalDate.now();
+        }
+
+        String codigoVueloOperativo = verificarOperatividad(dia);
+        if (codigoVueloOperativo == null) {
+            return; //Terminar método
+        }
+        valoresEncontrados.clear();
+        if (obtenerValorTerceraColumna(codigoVueloOperativo).equals("OVD")) {
+
+            try (BufferedReader lector = new BufferedReader(new FileReader("csv/vuelos.csv"))) {
+                String linea;
+                while ((linea = lector.readLine()) != null) {
+                    String[] campos = linea.split(";");
+                    if (campos.length > 1 && campos[0].equals(codigoVueloOperativo)) {
+                        valoresEncontrados.add(campos[0]);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //Recaudación
+    public static double calcularMultiplicacion(String fechaTexto) {
+        // Verificar si fechaTexto es nulo o está vacío
+        if (fechaTexto == null) {
+            fechaTexto = LocalDate.now().toString();
+        }
+
+        try (BufferedReader lector = new BufferedReader(new FileReader("csv/vuelos_diarios.csv"))) {
+            String linea;
+            double sumaMultiplicaciones = 0.0;
+
+            while ((linea = lector.readLine()) != null) {
+                String[] campos = linea.split(";");
+                if (campos.length >= 6 && campos[1].equals(fechaTexto)) {
+                    // Obtener valores de la 5a y 6a columna
+                    double valor5aColumna = Double.parseDouble(campos[4]);
+                    double valor6aColumna = Double.parseDouble(campos[5]);
+
+                    // Multiplicar y sumar al resultado total
+                    sumaMultiplicaciones += (valor5aColumna * valor6aColumna);
+                }
+            }
+
+            return sumaMultiplicaciones;
+
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+            return 0.0; // Manejar otros errores y devolver un valor predeterminado
+        } catch (DateTimeParseException e) {
+            e.printStackTrace();
+
+            // Mostrar un JOptionPane con un mensaje de error
+            JOptionPane.showMessageDialog(null, "Error: Formato de fecha incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+
+            return 0.0; // Devolver un valor predeterminado
+        }
+    }
+
+    //Vuelos operativos
+    public static void panelVuelosporCompañia(LocalDate dia) {
+        if (dia == null) {
+            dia = LocalDate.now();
+        }
+
+        String codigoVueloOperativo = verificarOperatividad(dia);
+        if (codigoVueloOperativo == null) {
+            return; //Terminar método
+        }
+        valoresEncontrados.clear();
+        if (obtenerValorPrimeraColumna(codigoVueloOperativo).equals(codigoVueloOperativo)) {
+
+            try (BufferedReader lector = new BufferedReader(new FileReader("csv/vuelos.csv"))) {
+                String linea;
+                while ((linea = lector.readLine()) != null) {
+                    String[] campos = linea.split(";");
+                    if (campos.length > 1 && campos[0].equals(codigoVueloOperativo)) {
+                        valoresEncontrados.add(campos[0]);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static String obtenerValorPrimeraColumna(String valorPrimeraColumna) {
+        String rutaArchivo = "csv/vuelos.csv";
+
+        try (BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo))) {
+            String linea;
+            while ((linea = lector.readLine()) != null) {
+                String[] campos = linea.split(";");
+                if (campos.length > 1 && campos[0].equals(valorPrimeraColumna)) {
+                    return campos[0]; // Devuelve el valor de la segunda columna
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null; // No se encontró una coincidencia en la primera columna
+    }
 }

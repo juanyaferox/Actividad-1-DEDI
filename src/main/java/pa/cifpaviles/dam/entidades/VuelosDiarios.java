@@ -19,7 +19,7 @@ public class VuelosDiarios {
     private LocalTime horaLlegadaReal;
     private int numeroPlazasOcupadas;
     private int precioVuelo;
-    private Vuelos vueloAsociado;
+    private Vuelos vueloAsociado;//se decidió no usar
 
     public VuelosDiarios() {
     }
@@ -39,7 +39,7 @@ public class VuelosDiarios {
         this.precioVuelo = precioVuelo;
     }
 
-    //constructor para hacer un vuelo diario asociado a un vuelo
+    //constructor para hacer un vuelo diario asociado a un vuelo//se decidió no usar
     public VuelosDiarios(Vuelos vueloAsociado, LocalDate fecha, LocalTime horaSalidaReal, LocalTime horaLlegadaReal,
             int numeroPlazasOcupadas, int precioVuelo) {
         this.vueloAsociado = vueloAsociado;

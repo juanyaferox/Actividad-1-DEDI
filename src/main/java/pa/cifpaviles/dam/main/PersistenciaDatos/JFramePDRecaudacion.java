@@ -4,8 +4,6 @@
  */
 package pa.cifpaviles.dam.main.PersistenciaDatos;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import javax.swing.JOptionPane;
 import pa.cifpaviles.dam.main.Gestion;
 import pa.cifpaviles.dam.main.JFramePD;
@@ -14,14 +12,13 @@ import pa.cifpaviles.dam.main.JFramePD;
  *
  * @author hulke
  */
-public class JFramePDSalidas extends javax.swing.JFrame {
+public class JFramePDRecaudacion extends javax.swing.JFrame {
 
     /**
-     * Creates new form JFramePDSalidas
+     * Creates new form JFramePDRecaudación
      */
-    public JFramePDSalidas() {
+    public JFramePDRecaudacion() {
         initComponents();
-        setLocationRelativeTo(null);
     }
 
     /**
@@ -55,7 +52,7 @@ public class JFramePDSalidas extends javax.swing.JFrame {
         jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jLabel8.setText("Introduzca la fecha de la que desea obtener los vuelos salientes");
+        jLabel8.setText("Introduzca la fecha de la que desea obtener la recaudación");
 
         bBuscar.setText("BUSCAR");
         bBuscar.addActionListener(new java.awt.event.ActionListener() {
@@ -82,31 +79,30 @@ public class JFramePDSalidas extends javax.swing.JFrame {
                         .addComponent(bVolver)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(bBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 35, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(514, 514, 514)
+                                .addComponent(bBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel8))
                         .addGap(24, 24, 24))))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel8))
-                .addGap(0, 16, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(bVolver)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 131, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
                 .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(39, 39, 39)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
-                .addGap(143, 143, 143)
+                .addGap(172, 172, 172)
                 .addComponent(bBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(14, 14, 14))
         );
@@ -129,33 +125,15 @@ public class JFramePDSalidas extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void bBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bBuscarActionPerformed
-        String fechaTexto = tFecha.getText();
-        if (fechaTexto == null || fechaTexto.trim().isEmpty()) {
-            fechaTexto = LocalDate.now().toString();
-        }
-        try {
-            LocalDate fecha = LocalDate.parse(fechaTexto);
-            Gestion.panelSalidas(fecha);
-            if (!Gestion.getValoresEncontrados().isEmpty()) {
-
-                JOptionPane.showMessageDialog(null, Gestion.getValoresEncontrados(), "Vuelos", 1);
-            } else {
-
-                JOptionPane.showMessageDialog(null, "Error: No se encontraron vuelos para la fecha especificada", "Error", 0);
-            }
-        } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(null, "Error: Formato de fecha inválido", "Error", 0);
-            // Manejar el error si la entrada no es un formato válido de fecha
-            e.printStackTrace();
-        }
-
-
-    }//GEN-LAST:event_bBuscarActionPerformed
-
     private void tFechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tFechaActionPerformed
 
     }//GEN-LAST:event_tFechaActionPerformed
+
+    private void bBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bBuscarActionPerformed
+       String fechaTexto = tFecha.getText();
+         double resultado = Gestion.calcularMultiplicacion(fechaTexto);
+         JOptionPane.showMessageDialog(null, "Los ingresos obtenidos el dia de hoy fueron: "+resultado+" €", "Recaudación", 1);
+    }//GEN-LAST:event_bBuscarActionPerformed
 
     private void bVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bVolverActionPerformed
         JFramePD ventanaPD = new JFramePD();
@@ -180,20 +158,21 @@ public class JFramePDSalidas extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JFramePDSalidas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JFramePDRecaudacion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JFramePDSalidas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JFramePDRecaudacion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JFramePDSalidas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JFramePDRecaudacion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JFramePDSalidas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JFramePDRecaudacion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new JFramePDSalidas().setVisible(true);
+                new JFramePDRecaudacion().setVisible(true);
             }
         });
     }
